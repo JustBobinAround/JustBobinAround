@@ -56,7 +56,6 @@ fn main() -> io::Result<()> {
         }
         Commands::New=> {
             let mut input = String::new();
-            println!("Enter Article Name:");
             if io::stdin().read_line(&mut input).is_ok() {
                 create_markdown_template(&input)?;
             }
@@ -139,11 +138,14 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     let mut metadata = String::new();
     let mut markdown_content = String::new();
     let mut in_metadata = false;
+    let mut metadata_count = 0;
+    
 
     for line in reader.lines() {
         let line = line?;
-        if line.trim() == "+++" {
+        if line.trim() == "+++" && metadata_count < 2 {
             in_metadata = !in_metadata;
+            metadata_count += 1;
             continue;
         }
 
@@ -161,6 +163,7 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     let parser = PCParser::new(&markdown_content);
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
+    println!("{}", html_output);
 
     let final_output = article_template!(metadata.title, html_output);
 
