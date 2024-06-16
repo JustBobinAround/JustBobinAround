@@ -7,3 +7,7 @@ build:
 new:
 	cd ./build_system; cargo run -- new
 
+push: build
+	git add .
+	git commit -m "running build"
+	git push
