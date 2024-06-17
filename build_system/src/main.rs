@@ -56,6 +56,7 @@ fn main() -> io::Result<()> {
         }
         Commands::New=> {
             let mut input = String::new();
+            println!("Enter Article Name:");
             if io::stdin().read_line(&mut input).is_ok() {
                 create_markdown_template(&input)?;
             }
