@@ -12,14 +12,13 @@ If you read the title carefully, I am talking about remapping "K", not "k". So
 for those that are unaware, "K" usually will try and run a man.lua file for the
 current word that your cursor is over. This is great, and I want to keep this
 functionality. But for certain languages, like rust or JavaScript, most of the
-time I am reading documentation from a certain website. Most of the time it is
-these three websites:
+time I am reading documentation from these three websites:
 
 - [docs.rs](https://docs.rs/)
 - [developer.mozilla.org](https://developer.mozilla.org/en-US/)
 - [docs.servicenow.com](https://docs.servicenow.com) - for my job
 
-Most of the time this will involve the task of copying something from my code,
+So my normal usages will usually involve the task of copying something from my code,
 googling the copied text, and maybe adding a few refining keywords or site filters.
 It may sound like that is a short task, but the time it takes does add up over time.
 So after thinking about it for a bit, I remembered that services like google and
