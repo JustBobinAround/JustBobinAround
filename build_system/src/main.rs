@@ -34,7 +34,7 @@ macro_rules! article_template {
 
 macro_rules! title_template {
     ($date: expr, $title: expr, $url: expr) => {
-        {format!("[**{}: {}**]({})\n", $date, $title, $url)}
+        {format!("- [**{}: {}**]({})\n", $date, $title, $url)}
     };
 }
 
@@ -164,7 +164,6 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     let parser = PCParser::new(&markdown_content);
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
-    println!("{}", html_output);
 
     let final_output = article_template!(metadata.title, html_output);
 

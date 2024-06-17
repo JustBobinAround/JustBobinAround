@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The Best K NeoVim Remap</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://justbobinaround.github.io/JustBobinAround/css/style.css">
+    <link rel="icon" href="https://justbobinaround.github.io/JustBobinAround/favicon.png" type="image/png">
+</head>
+<body>    
+    <div class="container">
+        <nav>
+            <a href="https://justbobinaround.github.io/JustBobinAround/index.html">README</a>
+            <a href="https://justbobinaround.github.io/JustBobinAround/html/article_list.html">Articles</a>
+            <a href="https://github.com/JustBobinAround">GitHub</a>
+            <a href="https://www.linkedin.com/in/robert-junkins-software/">LinkedIn</a>
+        </nav>
+        <h1>The Best K NeoVim Remap</h1>
+<p>If you aren't a NeoVim user, I am sorry for you're loss. If you are a NeoVim
+user, keep reading, this is for you:</p>
+<p>If you read the title carefully, I am talking about remapping &quot;K&quot;, not &quot;k&quot;. So
+for those that are unaware, &quot;K&quot; usually will try and run a man.lua file for the
+current word that your cursor is over. This is great, and I want to keep this
+functionality. But for certain languages, like rust or JavaScript, most of the
+time I am reading documentation from a certain website. Most of the time it is
+these three websites:</p>
+<ul>
+<li><a href="https://docs.rs/">docs.rs</a></li>
+<li><a href="https://developer.mozilla.org/en-US/">developer.mozilla.org</a></li>
+<li><a href="https://docs.servicenow.com">docs.servicenow.com</a> - for my job</li>
+</ul>
+<p>Most of the time this will involve the task of copying something from my code,
+googling the copied text, and maybe adding a few refining keywords or site filters.
+It may sound like that is a short task, but the time it takes does add up over time.
+So after thinking about it for a bit, I remembered that services like google and
+duckduckgo have the &quot;I'm feeling lucky operation&quot; where it will instantly redirect
+you to the most likely web result. Why not modify &quot;K&quot; to do this instead?</p>
+<p>So that's what I did for Rust files:</p>
+<pre><code class="language-lua">vim.api.nvim_create_autocmd({ &quot;BufEnter&quot;, &quot;BufWinEnter&quot; }, {
+  pattern = { &quot;*.rs&quot;},
+  callback = function()
+	vim.keymap.set(&quot;n&quot;, &quot;K&quot;, [[:!firefox https\:\/\/duckduckgo.com\/\?t=h\_\&amp;q=\!+&lt;C-r&gt;&lt;C-w&gt;+site\:docs\.rs&lt;CR&gt;]])
+  end,
+})
+</code></pre>
+<p>as well as for JavaScript files:</p>
+<pre><code class="language-lua">vim.api.nvim_create_autocmd({ &quot;BufEnter&quot;, &quot;BufWinEnter&quot; }, {
+  pattern = { &quot;*.js&quot;},
+  callback = function()
+	vim.keymap.set(&quot;n&quot;, &quot;K&quot;, [[:!firefox https\:\/\/duckduckgo.com\/\?t=h\_\&amp;q=\!+&lt;C-r&gt;&lt;C-w&gt;+site\:developer\.mozilla\.org+OR+site\:docs\.servicenow\.com&lt;CR&gt;]])
+  end,
+})
+</code></pre>
+<p>So what's going on here? Well, ignoring the terrible wrapping because I suck at css, NeoVim
+is taking the current word (just like normal &quot;K&quot;) and then building a &quot;I'm feeling lucky link&quot;
+with duckduckgo. I am using duckduckgo because google seems to make more of a fuss
+when I try and do this. I have specified different link criteria for each file type i.e.:</p>
+<pre><code>site:docs.rs                                            // for Rust
+
+site:developer.mozilla.org+OR+site:docs.servicenow.com  // for JS
+</code></pre>
+<p>So that way, the chances of me landing at the correct page are higher.</p>
+
+    </div>
+</body>
+</html>
