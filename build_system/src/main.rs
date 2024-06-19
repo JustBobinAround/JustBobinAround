@@ -44,7 +44,7 @@ macro_rules! article_template {
 
 macro_rules! title_template {
     ($date: expr, $title: expr, $url: expr) => {
-        {format!("- [**{}: {}**]({})\n", $date, $title, $url)}
+        {format!("- [**{}: {}**](/JustBobinAround/{})\n", $date, $title, $url)}
     };
 }
 
@@ -207,7 +207,12 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
 
     let output_file_path = Path::new(output_dir).join(path.file_stem().unwrap()).with_extension("html");
     if let Some(output_file_path) = output_file_path.to_str() {
-        articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
+        if output_file_path.find("../").is_some_and(|i|i==0) {
+            output_file_path.replacen("../", "", 1);
+            articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
+        } else {
+            articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
+        }
     }
     let mut output_file = File::create(output_file_path)?;
     write!(output_file, "{}", final_output)?;
@@ -217,6 +222,7 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
 
 async fn hello(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
     let path = format!("..{}", req.uri().path());
+    let path = path.replacen("../JustBobinAround/", "../",1);
     let path = if path == "../" { "../index.html".to_string() } else { path };
     println!("{:?}", path);
     if Path::new(&path).exists() && Path::new(&path).is_file() {
