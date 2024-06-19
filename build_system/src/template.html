@@ -7,12 +7,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {{
             let base = document.createElement('base');
+            base.href = "https://justbobinaround.github.io/JustBobinAround/";
             let hostname = window.location.hostname;
 
-            if (hostname !== "justbobinaround.github.io") {{
+            if(!(window.location.hostname === "justbobinaround.github.io")) {{
                 base.href = "http://0.0.0.0:8000/";
-            }} else {{
-                base.href = "https://justbobinaround.github.io/JustBobinAround/";
             }}
 
             document.head.appendChild(base);
