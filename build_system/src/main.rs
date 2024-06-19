@@ -208,7 +208,7 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     let output_file_path = Path::new(output_dir).join(path.file_stem().unwrap()).with_extension("html");
     if let Some(output_file_path) = output_file_path.to_str() {
         if output_file_path.find("../").is_some_and(|i|i==0) {
-            output_file_path.replacen("../", "", 1);
+            let output_file_path = output_file_path.replacen("../", "", 1);
             articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
         } else {
             articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
