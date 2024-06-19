@@ -17,3 +17,4 @@ critical infrastructure or maybe a maintainer for a major compiler/language.
 Those jobs don't really seem to be very common though. Perhaps in another life.
 Anyways, thanks for stopping by and happy reading!
 
+

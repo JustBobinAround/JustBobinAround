@@ -1,12 +1,16 @@
 use std::convert::Infallible;
 use std::net::SocketAddr;
+use std::time::Duration;
+use std::sync::mpsc::channel;
 
 use http_body_util::Full;
 use hyper::body::Bytes;
+use hyper::header::HeaderValue;
 use hyper::server::conn::http1;
 use hyper::service::service_fn;
 use hyper::{Request, Response};
 use hyper_util::rt::TokioIo;
+use notify::{Config, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use tokio::net::TcpListener;use pulldown_cmark::{html, Parser as PCParser};
 use serde::Deserialize;
 use std::fs::{self, File};
@@ -76,32 +80,55 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>>  {
             convert_markdown_files(input_dir, output_dir)?;
         }
         Commands::Serve => {
-            let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+            run_server(&input_dir, &output_dir).await?;
+        }
+    }
 
-            // We create a TcpListener and bind it to 127.0.0.1:3000
-            let listener = TcpListener::bind(addr).await?;
+    Ok(())
+}
 
-            // We start a loop to continuously accept incoming connections
-            loop {
-                let (stream, _) = listener.accept().await?;
+async fn run_server(input_dir: &str, output_dir: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let (tx, rx) = channel();
+    let config = Config::default()
+        .with_poll_interval(Duration::from_secs(2))
+        .with_compare_contents(true);
 
-                // Use an adapter to access something implementing `tokio::io` traits as if they implement
-                // `hyper::rt` IO traits.
-                let io = TokioIo::new(stream);
+    // Automatically select the best implementation for your platform.
+    let mut watcher: RecommendedWatcher = Watcher::new(tx, config)?;
 
-                // Spawn a tokio task to serve multiple connections concurrently
-                tokio::task::spawn(async move {
-                    // Finally, we bind the incoming connection to our `hello` service
-                    if let Err(err) = http1::Builder::new()
-                        // `service_fn` converts our function in a `Service`
-                        .serve_connection(io, service_fn(hello))
-                        .await
-                    {
-                        eprintln!("Error serving connection: {:?}", err);
-                    }
-                });
+    // Add a path to be watched. All files and directories at that path and
+    // below will be monitored for changes.
+    watcher.watch(Path::new("../md"), RecursiveMode::Recursive)?;
+
+    let listener = TcpListener::bind(addr).await?;
+    let input_dir = input_dir.to_owned();
+    let output_dir = output_dir.to_owned();
+    tokio::task::spawn(async move {
+        loop {
+            match rx.recv() {
+                Ok(event) => {
+                    println!("Files changed, rebuilding...");
+                    convert_markdown_files(&input_dir,&output_dir);
+                }
+                Err(e) => println!("Watch error: {:?}", e),
             }
         }
+    });
+
+    loop {
+        let (stream, _) = listener.accept().await?;
+
+        let io = TokioIo::new(stream);
+
+        tokio::task::spawn(async move {
+            if let Err(err) = http1::Builder::new()
+                .serve_connection(io, service_fn(handle_req))
+                .await
+            {
+                eprintln!("Error serving connection: {:?}", err);
+            }
+        });
     }
 
     Ok(())
@@ -220,7 +247,7 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     Ok(())
 }
 
-async fn hello(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
+async fn handle_req(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
     let path = format!("..{}", req.uri().path());
     let path = path.replacen("../JustBobinAround/", "../",1);
     let path = if path == "../" { "../index.html".to_string() } else { path };
@@ -230,8 +257,12 @@ async fn hello(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Byte
             Ok(content) => {content},
             Err(_) => {String::new()}
         };
-        Ok(Response::new(Full::new(Bytes::from(content))))
+        let mut response = Response::new(Full::new(Bytes::from(content)));
+        response.headers_mut().insert("Refresh", HeaderValue::from_static("5"));
+        Ok(response)
     } else {
         Ok(Response::new(Full::new(Bytes::from("404"))))
     }
 }
+
+
