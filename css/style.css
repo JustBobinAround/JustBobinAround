@@ -5,27 +5,32 @@
     src: url(/JustBobinAround/fonts/droid-sans-mono-zeromod/DroidSansMonoDotted.ttf) format('truetype');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
     background-color: #232136;
     color: #e0def4;
+    margin: 0;
+    padding: 0;
 }
+
 .container {
     justify-content: center;
     align-items: center;
-    margin: 0;
-    width: 210mm; /* A4 paper width */
-    margin: 0 auto; /* Center horizontally */
+    margin: 0 auto;
+    width: 100%;
+    max-width: 210mm; /* A4 paper width */
 }
+
 h1::before {
     content: "{"; 
     color: #6e6a86;
 } 
 h1 { 
-    margin-top: 40px;
+    margin-top: 20px;
     font-family: Droid Sans Mono; 
     font-size: 23px; 
     font-style: normal; 
@@ -37,15 +42,14 @@ h1 {
 h1::after { 
     content: "}"; 
     color: #6e6a86;
-} 
-
+}
 
 h2::before {
     content: "<"; 
     color: #6e6a86;
 } 
 h2 {
-    margin-top: 40px;
+    margin-top: 20px;
     margin-left: 5px;
     font-family: Droid Sans Mono; 
     font-size: 16px; 
@@ -58,14 +62,14 @@ h2 {
 h2::after {
     content: "/>"; 
     color: #6e6a86;
-} 
+}
 
 h3::before {
     content: "<"; 
     color: #6e6a86;
 } 
 h3 {
-    margin-top: 40px;
+    margin-top: 20px;
     margin-left: 5px;
     font-family: Droid Sans Mono; 
     font-size: 16px; 
@@ -78,11 +82,10 @@ h3 {
 h3::after {
     content: "/>"; 
     color: #6e6a86;
-} 
-
+}
 
 p { 
-    margin-left: 40px;
+    margin-left: 20px;
     font-family: Droid Sans Mono; 
     font-size: 16px; 
     font-weight: 400; 
@@ -94,7 +97,7 @@ blockquote::before {
     color: #C39178; 
 }
 blockquote { 
-    margin-left: 80px;
+    margin-left: 40px;
     font-family: Droid Sans Mono; 
     font-size: 16px; 
     font-style: normal; 
@@ -106,9 +109,10 @@ blockquote {
 blockquote::after {
     content: "\""; 
     color: #C39178; 
-} 
+}
+
 pre::before {
-    margin-left: 40px;
+    margin-left: 20px;
     color: #6e6a86;
 }
 pre { 
@@ -120,7 +124,8 @@ pre {
     line-height: 23px;
     color: #6e6a86;
     white-space: pre-wrap; /* Allows the pre element to wrap */
-    margin-left: 40px;
+    margin-left: 20px;
+    margin-right: 10px;
 }
 pre::after {
     color: #6e6a86;
@@ -128,7 +133,7 @@ pre::after {
 pre>code {
     color: #e0def4;
     background-color: #393552; /* Grey color */
-    display: inline-block; /* or display: block; */
+    display: block; /* or display: block; */
     padding: 14px; /* Adjust padding as needed */
     border-radius: 10px; /* Optional: Add rounded corners */
 }
@@ -237,7 +242,7 @@ ul>li::before{
 }
 ul>li{
     font-family: Droid Sans Mono; 
-    margin-left: 20px;
+    margin-left: 10px;
     color: #eb6f92;
 }
 
@@ -246,7 +251,7 @@ ol>li::before{
 }
 ol>li{
     font-family: Droid Sans Mono; 
-    margin-left: 20px;
+    margin-left: 10px;
     color: #eb6f92;
 }
 ol li::marker {
@@ -261,9 +266,39 @@ ol li::marker {
         margin-left: auto;
         margin-right: auto;
     }
-    
+}
+
+@media only screen and (max-width: 767px) {
+    h1 {
+        font-size: 20px;
+        margin-top: 20px;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+    h2, h3 {
+        font-size: 14px;
+        margin-top: 20px;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+    p, blockquote, pre, a, p>a {
+        font-size: 14px;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+    .container {
+        padding: 0px;
+    }
+    blockquote, pre {
+        margin-left: 20px;
+    }
+    li {
+        margin-top: 20px;
+    }
+
 }
 
 .footer {
     padding: 10px;
 }
+
