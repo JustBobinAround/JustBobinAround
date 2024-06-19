@@ -1,4 +1,13 @@
-use pulldown_cmark::{html, Parser as PCParser};
+use std::convert::Infallible;
+use std::net::SocketAddr;
+
+use http_body_util::Full;
+use hyper::body::Bytes;
+use hyper::server::conn::http1;
+use hyper::service::service_fn;
+use hyper::{Request, Response};
+use hyper_util::rt::TokioIo;
+use tokio::net::TcpListener;use pulldown_cmark::{html, Parser as PCParser};
 use serde::Deserialize;
 use std::fs::{self, File};
 use std::io::{self, BufRead, BufReader, Write};
@@ -20,7 +29,8 @@ struct Cli {
 enum Commands {
     New,
     Convert,
-    CreateBlog
+    CreateBlog,
+    Serve
 }
 
 macro_rules! article_template {
@@ -44,7 +54,8 @@ struct MetaData {
     date: String,
 }
 
-fn main() -> io::Result<()> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>>  {
     let input_dir = "../md";
     let output_dir = "../html";
 
@@ -63,6 +74,33 @@ fn main() -> io::Result<()> {
         }
         Commands::Convert => {
             convert_markdown_files(input_dir, output_dir)?;
+        }
+        Commands::Serve => {
+            let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+
+            // We create a TcpListener and bind it to 127.0.0.1:3000
+            let listener = TcpListener::bind(addr).await?;
+
+            // We start a loop to continuously accept incoming connections
+            loop {
+                let (stream, _) = listener.accept().await?;
+
+                // Use an adapter to access something implementing `tokio::io` traits as if they implement
+                // `hyper::rt` IO traits.
+                let io = TokioIo::new(stream);
+
+                // Spawn a tokio task to serve multiple connections concurrently
+                tokio::task::spawn(async move {
+                    // Finally, we bind the incoming connection to our `hello` service
+                    if let Err(err) = http1::Builder::new()
+                        // `service_fn` converts our function in a `Service`
+                        .serve_connection(io, service_fn(hello))
+                        .await
+                    {
+                        eprintln!("Error serving connection: {:?}", err);
+                    }
+                });
+            }
         }
     }
 
@@ -177,3 +215,17 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     Ok(())
 }
 
+async fn hello(req: Request<hyper::body::Incoming>) -> Result<Response<Full<Bytes>>, Infallible> {
+    let path = format!("..{}", req.uri().path());
+    let path = if path == "../" { "../index.html".to_string() } else { path };
+    println!("{:?}", path);
+    if Path::new(&path).exists() && Path::new(&path).is_file() {
+        let content = match std::fs::read_to_string(path) {
+            Ok(content) => {content},
+            Err(_) => {String::new()}
+        };
+        Ok(Response::new(Full::new(Bytes::from(content))))
+    } else {
+        Ok(Response::new(Full::new(Bytes::from("404"))))
+    }
+}

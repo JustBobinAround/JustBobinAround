@@ -4,14 +4,28 @@
     <title>The Best K NeoVim Remap</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://justbobinaround.github.io/JustBobinAround/css/style.css">
-    <link rel="icon" href="https://justbobinaround.github.io/JustBobinAround/favicon.png" type="image/png">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let base = document.createElement('base');
+            let hostname = window.location.hostname;
+
+            if (hostname !== "https://justbobinaround.github.io/") {
+                base.href = "http://0.0.0.0:8000/";
+            } else {
+                base.href = "https://justbobinaround.github.io/JustBobinAround/";
+            }
+
+            document.head.appendChild(base);
+        });
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
 </head>
 <body>    
     <div class="container">
         <nav>
-            <a href="https://justbobinaround.github.io/JustBobinAround/index.html">README</a>
-            <a href="https://justbobinaround.github.io/JustBobinAround/html/article_list.html">Articles</a>
+            <a href="/index.html">README</a>
+            <a href="/html/article_list.html">Articles</a>
             <a href="https://github.com/JustBobinAround">GitHub</a>
             <a href="https://www.linkedin.com/in/robert-junkins-software/">LinkedIn</a>
         </nav>
@@ -60,6 +74,10 @@ site:developer.mozilla.org+OR+site:docs.servicenow.com  // for JS
 </code></pre>
 <p>So that way, the chances of me landing at the correct page are higher.</p>
 
+        <footer class="footer">
+        <pre>
+This website's content is my own and does not reflect the views of any past employer. This website's content is my own and does not reflect the views of any present employer. This website's content is my own and does not reflect the views of any future employer. All website's content and its build system fall under <a href="https://github.com/JustBobinAround/JustBobinAround/blob/main/LICENSE">MIT License</a> </pre>
+        </footer>
     </div>
 </body>
 </html>

@@ -25,7 +25,8 @@ This feels very meta having my article in my article lol.
 
 Anyways... By having this metadata, now I can auto-generate my list of articles
 and have each one tagged with a date and title. This all gets templated in my
-build system that I made for this site. Here is an overview of the Makefile
+[build system](https://github.com/JustBobinAround/JustBobinAround/tree/main/build_system)
+that I made for this site. Here is an overview of the Makefile
 that I have set up:
 ```bash
 serve: build

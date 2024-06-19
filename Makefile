@@ -1,5 +1,5 @@
 serve: build
-	python -m http.server
+	cd ./build_system; cargo run -- serve 
 
 build: 
 	cd ./build_system; cargo run -- convert
