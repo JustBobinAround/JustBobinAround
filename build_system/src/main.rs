@@ -166,7 +166,7 @@ fn create_markdown_template(article_name: &str) -> io::Result<()> {
 fn convert_markdown_files(input_dir: &str, output_dir: &str) -> io::Result<()>{
     fs::create_dir_all(output_dir)?;
 
-    let mut articles: String = String::new();
+    let mut articles: Vec<String> = Vec::new();
 
     for entry in WalkDir::new(input_dir).into_iter().filter_map(Result::ok) {
         let path = entry.path();
@@ -174,6 +174,9 @@ fn convert_markdown_files(input_dir: &str, output_dir: &str) -> io::Result<()>{
             process_markdown_file(&mut articles, path, output_dir)?;
         }
     }
+    articles.sort();
+    articles.reverse();
+    let articles: String = articles.concat();
     let parser = PCParser::new(&articles);
     let mut html_output = String::new();
     html::push_html(&mut html_output, parser);
@@ -197,7 +200,7 @@ fn convert_markdown_files(input_dir: &str, output_dir: &str) -> io::Result<()>{
     Ok(())
 }
 
-fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -> io::Result<()> {
+fn process_markdown_file(articles: &mut Vec<String>, path: &Path, output_dir: &str) -> io::Result<()> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
 
@@ -236,9 +239,9 @@ fn process_markdown_file(articles: &mut String, path: &Path, output_dir: &str) -
     if let Some(output_file_path) = output_file_path.to_str() {
         if output_file_path.find("../").is_some_and(|i|i==0) {
             let output_file_path = output_file_path.replacen("../", "", 1);
-            articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
+            articles.push(title_template!(metadata.date, metadata.title, output_file_path));
         } else {
-            articles.push_str(&title_template!(metadata.date, metadata.title, output_file_path));
+            articles.push(title_template!(metadata.date, metadata.title, output_file_path));
         }
     }
     let mut output_file = File::create(output_file_path)?;
