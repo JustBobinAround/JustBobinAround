@@ -5,3 +5,110 @@
 }
 +++
 # Obfuscating JavaScript Into Whitespace
+
+### Some Background 
+
+So, for a long time, I have always had a dislike for JavaScript. This has changed
+over time, but not for the reason you would expect. I'll get to why I enjoy it,
+but before that, I need to give some background: 
+
+It always made me sad that the early days of the web got a scripting language
+before it got a virtual machine. Since the web got a scripting language as the
+primary control structure of the client, everything effectively got throttled
+to the speed of the language's interpreter. Don't get me wrong, V8 has had
+impressive performance growth over the past decade, but there will always be a
+fundamental performance gap since we skipped an entire abstraction layer. Even
+with new emerging web standards like WASM, there is still significant
+performance issues. WASM does have direct DOM access and requires JS to act as
+a middleman between the DOM and its virtual machine. This has made the amount
+of code that is required to be shipped to the client substantially more than it
+really should be. And even if WASM could ship as an independent binary with no
+JS bindings, there would still be the issue of remaining compatible with older
+browsers. The only way that you can even attempt to do this is by shipping an
+entire JS based WASM interpreter that is a fallback if the client lacks WASM
+compatibility. All of these problems could have been avoided if the web had
+just started with a virtual machine as the initial standard.
+
+Now I would like to caveat the last paragraph with one thing. I think the web
+has greatly benefited by having a standardized and "readable" language as its
+primary form of control. I think this lead to a more "open" and uniform web in
+the beginning. It might not be a semantic web, but at least its not like every
+webpage is running their own rendering engine in every language imaginable; a
+VM based web could have definitely lead to that outcome. - Oh wait, what's a framework
+again and why are there so many? - I'm sure you can see the similarities, its just
+a abstraction layer higher.
+
+### Complaints Aside, Why I Now Enjoy JavaScript
+
+I still prefer compiled languages over scripting languages. But one day I was writing
+a really crappy interpreter for an esolang that I came up with a while ago. This
+is fizzbuzz for the weirdos that want to see its syntax:
+```
+!"Hello, world!";
+a = 100;
+$a{
+    a = a - 1;
+    d = a;
+    
+    b = a % 3;
+    b = b == 0;
+    ?b{
+        d = "fizz";
+    }    
+
+    b = a % 5;
+    b = b == 0;
+    ?b{
+        d = "buzz";
+    }
+    
+    b = a % 5;
+    b = b == 0;
+    c = a % 3;
+    c = c == 0;
+    b = c & b;
+    ?b{
+        d = "fizzbuzz";
+    }
+
+    d = "" + d + "\n";
+    !d;
+}
+```
+
+This was one of the first interpreters that I had written that had dynamic typing.
+I came up with a set of arbitrary rules, many that make no sense, just so that
+it was impossible for an error to occur when using any operator on mismatched
+operands. What made this an esolang even better was that even if there was an
+error, it would arbitrarily replace the code using semantic analysis until the
+program is able to run. This made debugging this language very difficult. So
+what does this have to do with JavaScript? Well after I came up with all the
+arbitrary rules, I realized that most of them matched JavaScript's standard.
+Ever since that day, I have started calling JavaScript an esolang. Think about
+how funny that is, the modern informational monolith that we call the internet
+is primarily coded in a language that is basically an esolang. Once you realize
+that, it becomes much easier to cope with writing some of the monstrosities
+I've had to in the past.
+
+LGTM; its an esolang anyways! Ship it to PROD, everything is just fine!
+
+### Ok, but What About the JavaScript Obfuscation?
+
+Ok, I know that was a long backstory. I couldn't help myself. On to the actual
+good stuff.
+
+The other day I learned that JavaScript accepts UTF-8 characters in its strings
+without the need for an escape, within reason of course. Furthermore, a webpage
+can too, so long as you declare to the browser what encoding you are using. That
+got me thinking: 
+
+>Isn't there a UTF-8 whitespace character with zero width?
+
+Then immediately I started to think:
+
+>What if there are two different UTF-8 whitespace characters with zero width????????
+
+Those two question made me lose sleep until around 2am I said screw it. I got
+up to go read about UTF-8 characters and what are legal character's in the
+ecmascript standard. I mean, that is what any normal person would do, right?
+

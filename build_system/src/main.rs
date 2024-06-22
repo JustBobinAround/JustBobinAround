@@ -89,6 +89,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>>  {
 
 async fn run_server(input_dir: &str, output_dir: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    println!("Serving md blog at 127.0.0.1:8000");
     let (tx, rx) = channel();
     let config = Config::default()
         .with_poll_interval(Duration::from_secs(2))
